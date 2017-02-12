@@ -4,11 +4,11 @@ run:
 
 go get -v
 
-go run graphql
----------------------------
+go run graphql.go
 
 http://localhost:9999
-------------------------------
+
+
 frontend:
 
 npm install
