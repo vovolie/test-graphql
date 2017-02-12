@@ -2,8 +2,14 @@
   "name": "test-vue",
   "private": true,
   "scripts": {
-    "start": "go run graphql.go & babel-node ./server.js",
-    "update-schema": "cd ./scripts && go run updateSchema.go"
+    "start": "webpack-dev-server -d --hot --inline --history-api-fallback --no-info --port 3000",
+    "update-schema": "cd ./scripts && go run updateSchema.go",
+    "build": "webpack -d --inline --history-api-fallback --config webpack.config.js"
+  },
+  "graphql": {
+    "request": {
+      "url": "http://localhost:9999/graphql"
+    }
   },
   "dependencies": {
     "classnames": "2.2.5",

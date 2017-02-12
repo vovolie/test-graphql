@@ -1,10 +1,12 @@
 package main
 
 import (
-	"github.com/graphql-go/handler"
-	"qiushibaike.com/test-vue/data"
 	"log"
 	"net/http"
+
+	"github.com/graphql-go/handler"
+	"github.com/rs/cors"
+	"qiushibaike.com/test-vue/data"
 )
 
 func main() {
@@ -14,7 +16,12 @@ func main() {
 		Pretty: true,
 	})
 
-	http.Handle("/graphql", h)
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+	})
+
+	http.Handle("/graphql", c.Handler(h))
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/", fs)
 

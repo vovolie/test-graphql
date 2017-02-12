@@ -6,16 +6,13 @@ import (
 	"golang.org/x/net/context"
 )
 
-
 var nodeDefinitions *relay.NodeDefinitions
 var materialsConnection *relay.GraphQLConnectionDefinitions
-
 
 var categoryType *graphql.Object
 var materialType *graphql.Object
 
 var Schema graphql.Schema
-
 
 func init() {
 
@@ -63,7 +60,7 @@ func init() {
 	})
 
 	materialsConnection = relay.ConnectionDefinitions(relay.ConnectionConfig{
-		Name: "Material",
+		Name:     "Material",
 		NodeType: materialType,
 	})
 
@@ -74,7 +71,7 @@ func init() {
 			"name": &graphql.Field{
 				Type: graphql.String,
 			},
-			"materils": &graphql.Field{
+			"materials": &graphql.Field{
 				Type: materialsConnection.ConnectionType,
 				Args: relay.ConnectionArgs,
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -137,9 +134,9 @@ func init() {
 					materialId, _ := payload["materialId"].(string)
 					material := GetMaterial(materialId)
 					return relay.EdgeType{
-						Node: material,
+						Node:   material,
 						Cursor: relay.CursorForObjectInConnection(MaterialsToSliceInterface(GetMaterials(material.CategoryInfo)), material),
-					},nil
+					}, nil
 				},
 			},
 			"viewer": &graphql.Field{
@@ -155,7 +152,7 @@ func init() {
 			cover, _ := inputMap["cover"].(string)
 			url, _ := inputMap["url"].(string)
 			materialId := AddMaterial(categoryInfo, name, cover, url)
-			return map[string]interface{} {
+			return map[string]interface{}{
 				"materialId": materialId,
 			}, nil
 		},
@@ -170,7 +167,7 @@ func init() {
 
 	var err error
 	Schema, err = graphql.NewSchema(graphql.SchemaConfig{
-		Query: rootType,
+		Query:    rootType,
 		Mutation: mutationType,
 	})
 	if err != nil {

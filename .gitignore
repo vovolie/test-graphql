@@ -1,3 +1,8 @@
-.idea/
 node_modules/
-.gitignore
+logs
+*.log
+npm-debug.log*
+.idea/
+.DB_Store
+.vscode/
+dist/
