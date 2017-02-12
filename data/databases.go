@@ -1,8 +1,6 @@
 package data
 
-
 import "fmt"
-
 
 type Category struct {
 	ID string `json:"id"`
@@ -26,77 +24,126 @@ var Material3 = &Material{"3", "1", "一生有你", "3.jpg", "3.mp3"}
 var Material4 = &Material{"4", "2", "夜照亮了夜", "4.jpg", "4.mp3"}
 
 
-
-var categoryList = map[string]*Category{
+var categoryById = map[string]*Category{
 	"1": Music,
 	"2": Sticker,
 }
 
-var materialList = map[string]*Material{
+
+var materialsById = map[string]*Material{
 	"1": Material1,
 	"2": Material2,
 	"3": Material3,
 	"4": Material4,
 }
-
-var nextMaterial = 5
-var nextCategory = 3
-
-func CreateCategory(categoryName string)  *Category {
-	nextCategory = nextCategory + 1
-	newCategory := &Category{
-		fmt.Sprintf("%v", nextCategory),
-		categoryName,
-	}
-	categoryList[newCategory.ID] = newCategory
-
-	return newCategory
+var materialIdsByCategory = map[string][]string{
+	"1": {"1", "2", "3"},
+	"2": {"4"},
 }
 
-func CreateMaterial(categoryInfo, name, cover, url string) *Material {
-	nextMaterial = nextMaterial + 1
-	newMaterial := &Material{
-		fmt.Sprintf("%v", nextMaterial),
-		categoryInfo,
-		name,
-		cover,
-		url,
+var nextMaterialId = 4
+
+func AddMaterial(categoryInfo, name, cover, url string) string {
+	material := &Material{
+		ID: fmt.Sprintf("%v", nextMaterialId),
+		CategoryInfo: categoryInfo,
+		Name: name,
+		Cover: cover,
+		URL: url,
 	}
-	materialList[newMaterial.ID] = newMaterial
-	return newMaterial
+	nextMaterialId = nextMaterialId + 1
+
+	materialsById[material.ID] = material
+	materialIdsByCategory[material.CategoryInfo] = append(materialIdsByCategory[material.CategoryInfo], material.ID)
+
+	return material.ID
 }
 
-func GetCategoryById(id string) *Category {
-	if category, ok := categoryList[id]; ok {
-		return category
-	}
-	return nil
-}
-
-func GetMaterialById(id string) *Material {
-	if material, ok := materialList[id]; ok {
+func GetMaterial(id string) *Material {
+	if material, ok := materialsById[id]; ok {
 		return material
 	}
 	return nil
 }
 
-func GetMaterialByCategory(id string) map[string]*Material {
-	materials := map[string]*Material{}
-	if category, ok := categoryList[id]; ok {
-		for _, material := range materialList {
-			if material.CategoryInfo == category.ID {
-				materials[material.ID] = material
+func GetMaterials(categoryId string) []*Material {
+	materials := []*Material{}
+	if categoryId == "any" {
+		for id := range categoryById {
+			for _, materialId := range materialIdsByCategory[id] {
+				if material := GetMaterial(materialId); material != nil {
+					materials = append(materials, material)
+				}
+			}
+		}
+	} else {
+		for _, materialId := range materialIdsByCategory[categoryId] {
+			if material := GetMaterial(materialId); material !=nil {
+				materials = append(materials, material)
 			}
 		}
 	}
+
 	return materials
 }
 
-func GetCategory() map[string]*Category {
-	return categoryList
+
+func GetCategory(id string) *Category {
+	if category, ok := categoryById[id]; ok {
+		return category
+	}
+	return nil
 }
 
-func GetMaterial() map[string]*Material {
-	return materialList
+func GetViewer() *Category {
+	return GetCategory("1")
 }
 
+func ChangeMaterialCategory(id string, categoryInfo string) bool {
+	material := GetMaterial(id)
+	if material == nil {
+		return false
+	}
+	material.CategoryInfo = categoryInfo
+	updatedMaterialIdsForCategory := []string{}
+	for _, materialId := range materialIdsByCategory[material.CategoryInfo] {
+		updatedMaterialIdsForCategory = append(updatedMaterialIdsForCategory, materialId)
+	}
+	materialIdsByCategory[material.CategoryInfo] = updatedMaterialIdsForCategory
+	return true
+}
+
+func ChangeMaterialUrl(id, url string) {
+	material := GetMaterial(id)
+	if material == nil {
+		return
+	}
+	material.URL = url
+}
+
+func RenameMaterial(id, name string) {
+	material := GetMaterial(id)
+	if material != nil {
+		material.Name = name
+	}
+}
+
+func RemoveMaterial(id string) {
+	material := GetMaterial(id)
+	updatedMaterialIdsForCategory := []string{}
+	for _, materialId := range materialIdsByCategory[material.CategoryInfo] {
+		if materialId != id {
+			updatedMaterialIdsForCategory = append(updatedMaterialIdsForCategory, materialId)
+		}
+	}
+	materialIdsByCategory[material.CategoryInfo] = updatedMaterialIdsForCategory
+	delete(materialsById, id)
+}
+
+func MaterialsToSliceInterface(materials []*Material) []interface{} {
+	materialsIFace := []interface{}{}
+	for _, material := range  materials {
+		materialsIFace = append(materialsIFace, material)
+	}
+	return materialsIFace
+}

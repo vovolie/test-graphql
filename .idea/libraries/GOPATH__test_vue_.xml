@@ -2,17 +2,17 @@
   <library name="GOPATH &lt;test-vue&gt;">
     <CLASSES>
       <root url="file://$PROJECT_DIR$/../../gopkg.in" />
-      <root url="file://$PROJECT_DIR$/.." />
       <root url="file://$PROJECT_DIR$/../../git.moumentei.com" />
       <root url="file://$PROJECT_DIR$/../../github.com" />
+      <root url="file://$PROJECT_DIR$/.." />
       <root url="file://$PROJECT_DIR$/../../golang.org" />
       <root url="file://$PROJECT_DIR$/../../sourcegraph.com" />
     </CLASSES>
     <SOURCES>
       <root url="file://$PROJECT_DIR$/../../gopkg.in" />
-      <root url="file://$PROJECT_DIR$/.." />
       <root url="file://$PROJECT_DIR$/../../git.moumentei.com" />
       <root url="file://$PROJECT_DIR$/../../github.com" />
+      <root url="file://$PROJECT_DIR$/.." />
       <root url="file://$PROJECT_DIR$/../../golang.org" />
       <root url="file://$PROJECT_DIR$/../../sourcegraph.com" />
     </SOURCES>
