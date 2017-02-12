@@ -41,6 +41,7 @@ var materialIdsByCategory = map[string][]string{
 	"2": {"4"},
 }
 
+
 var nextMaterialId = 4
 
 func AddMaterial(categoryInfo, name, cover, url string) string {
@@ -95,8 +96,8 @@ func GetCategory(id string) *Category {
 	return nil
 }
 
-func GetViewer() *Category {
-	return GetCategory("1")
+func GetViewer(id string) *Category {
+	return GetCategory(id)
 }
 
 func ChangeMaterialCategory(id string, categoryInfo string) bool {

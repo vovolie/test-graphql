@@ -76,12 +76,7 @@ func init() {
 			},
 			"materils": &graphql.Field{
 				Type: materialsConnection.ConnectionType,
-				Args: relay.NewConnectionArgs(graphql.FieldConfigArgument{
-					"categoryId": &graphql.ArgumentConfig{
-						Type: graphql.String,
-						DefaultValue: "any",
-					},
-				}),
+				Args: relay.ConnectionArgs,
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					id := p.Source.(*Category).ID
 					args := relay.NewConnectionArguments(p.Args)
@@ -111,16 +106,72 @@ func init() {
 			"viewer": &graphql.Field{
 				Type: categoryType,
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return GetViewer(), nil
+					return GetViewer("1"), nil
 				},
 			},
 			"node": nodeDefinitions.NodeField,
 		},
 	})
 
+	addMaterialMutation := relay.MutationWithClientMutationID(relay.MutationConfig{
+		Name: "AddMaterial",
+		InputFields: graphql.InputObjectConfigFieldMap{
+			"categoryInfo": &graphql.InputObjectFieldConfig{
+				Type: graphql.NewNonNull(graphql.String),
+			},
+			"name": &graphql.InputObjectFieldConfig{
+				Type: graphql.NewNonNull(graphql.String),
+			},
+			"cover": &graphql.InputObjectFieldConfig{
+				Type: graphql.NewNonNull(graphql.String),
+			},
+			"url": &graphql.InputObjectFieldConfig{
+				Type: graphql.NewNonNull(graphql.String),
+			},
+		},
+		OutputFields: graphql.Fields{
+			"materialEdge": &graphql.Field{
+				Type: materialsConnection.EdgeType,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					payload, _ := p.Source.(map[string]interface{})
+					materialId, _ := payload["materialId"].(string)
+					material := GetMaterial(materialId)
+					return relay.EdgeType{
+						Node: material,
+						Cursor: relay.CursorForObjectInConnection(MaterialsToSliceInterface(GetMaterials(material.CategoryInfo)), material),
+					},nil
+				},
+			},
+			"viewer": &graphql.Field{
+				Type: categoryType,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					return GetViewer(p.Source.(*Category).ID), nil
+				},
+			},
+		},
+		MutateAndGetPayload: func(inputMap map[string]interface{}, info graphql.ResolveInfo, ctx context.Context) (map[string]interface{}, error) {
+			categoryInfo, _ := inputMap["categoryInfo"].(string)
+			name, _ := inputMap["name"].(string)
+			cover, _ := inputMap["cover"].(string)
+			url, _ := inputMap["url"].(string)
+			materialId := AddMaterial(categoryInfo, name, cover, url)
+			return map[string]interface{} {
+				"materialId": materialId,
+			}, nil
+		},
+	})
+
+	mutationType := graphql.NewObject(graphql.ObjectConfig{
+		Name: "Mutation",
+		Fields: graphql.Fields{
+			"addMaterial": addMaterialMutation,
+		},
+	})
+
 	var err error
 	Schema, err = graphql.NewSchema(graphql.SchemaConfig{
 		Query: rootType,
+		Mutation: mutationType,
 	})
 	if err != nil {
 		panic(err)
