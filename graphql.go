@@ -6,7 +6,7 @@ import (
 
 	"github.com/graphql-go/handler"
 	"github.com/rs/cors"
-	"qiushibaike.com/test-vue/data"
+	"github.com/vovolie/test-graphql/data"
 )
 
 func main() {

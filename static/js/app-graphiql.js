@@ -65,7 +65,7 @@ $(function (global) {
     var toolbar = React.createElement(GraphiQL.Toolbar, {}, [
       "Source available at ",
       React.createElement("a", {
-        href: "https://github.com/sogko/golang-graphql-playground",
+        href: "https://github.com/vovolie/test-graphql",
       }, "github")
     ]);
     React.render(
@@ -89,7 +89,7 @@ $(function (global) {
             "#\n" +
             "# Press the run button above, or Cmd-Enter to execute the query, and the result\n" +
             "# will appear in the pane to the right.\n\n" +
-            "query testQuery {\n all{\n materials (id: \"1\", first: 1){\n edges {\n node {\n name \n url }\n }\n }\n }\n }"
+            "query testQuery {\n viewer {\n name\n materials {\n  edges {\n node {\n name\n  cover\n url\n }\n }\n }\n }\n }"
         }, toolbar),
         elem
     );
